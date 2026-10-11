@@ -1,14 +1,13 @@
 """Draft developer replies to negative reviews (a human edits and posts them).
 
-Uses Gemini or Claude when a key is configured (same LLM_PROVIDER logic as classify.py);
+Uses Gemini when GEMINI_API_KEY is set (same LLM_PROVIDER logic as classify.py);
 otherwise a category template is used.
 """
 import os
 
 from pipeline.taxonomy import label
 
-CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-5-5")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
 SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", "app@moveinsync.com")
 
 TEMPLATES = {
@@ -32,16 +31,6 @@ End by inviting them to email {email} with trip/company details. Reply in the re
 (English if mixed Hinglish is unclear). Output only the reply text."""
 
 
-def _claude(system: str, user: str) -> str:
-    import anthropic
-    resp = anthropic.Anthropic().messages.create(
-        model=CLAUDE_MODEL, max_tokens=2000, system=system, output_config={"effort": "low"},
-        messages=[{"role": "user", "content": user}])
-    if resp.stop_reason == "refusal":
-        return ""
-    return next((b.text for b in resp.content if b.type == "text"), "")
-
-
 def _gemini(system: str, user: str) -> str:
     from google import genai
     from google.genai import types
@@ -54,14 +43,13 @@ def _gemini(system: str, user: str) -> str:
 def draft(text: str, stars: int, category: str) -> tuple[str, str]:
     """Returns (reply, engine)."""
     from pipeline.classify import default_engine
-    engine = default_engine()
-    system = PROMPT.format(email=SUPPORT_EMAIL)
-    user = f"Stars: {stars}\nIssue category: {label(category)}\nReview: {text}"
-    if engine in ("claude", "gemini"):
+    if default_engine() == "gemini":
+        system = PROMPT.format(email=SUPPORT_EMAIL)
+        user = f"Stars: {stars}\nIssue category: {label(category)}\nReview: {text}"
         try:
-            reply = (_claude if engine == "claude" else _gemini)(system, user).strip()
+            reply = _gemini(system, user).strip()
             if reply:
-                return reply[:350], engine
-        except Exception as e:  # any provider error -> template, never break the dashboard
-            print(f"[replies] {engine} draft failed, using template: {e}")
+                return reply[:350], "gemini"
+        except Exception as e:  # any API error -> template, never break the dashboard
+            print(f"[replies] gemini draft failed, using template: {e}")
     return TEMPLATES.get(category, DEFAULT).format(email=SUPPORT_EMAIL), "template"

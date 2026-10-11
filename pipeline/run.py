@@ -1,7 +1,7 @@
 """One command to refresh everything:  python -m pipeline.run
 
 1. scrape new reviews + rating snapshot
-2. tag new reviews (Claude if ANTHROPIC_API_KEY is set, else keyword rules)
+2. tag new reviews (Gemini if GEMINI_API_KEY is set, else keyword rules)
 3. print a short health report (and exit non-zero on a release regression, so CI can alert)
 """
 import argparse
@@ -18,7 +18,7 @@ from pipeline.config import PRIMARY_APP  # noqa: E402
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-scrape", action="store_true")
-    ap.add_argument("--since", default=None, help="only send reviews on/after this date to Claude")
+    ap.add_argument("--since", default=None, help="only send reviews on/after this date to Gemini")
     ap.add_argument("--fail-on-regression", action="store_true")
     a = ap.parse_args()
 

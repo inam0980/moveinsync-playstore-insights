@@ -27,7 +27,7 @@ QUICK_WINS = [
         "why": "Developer replies collapsed after mid-2024. Google lets reviewers "
                "edit their rating after a reply, and replies are public proof to prospective users and HR buyers.",
         "what": [
-            "Reply to every 1-2 star review within 48h. Use this repo's reply queue: Claude drafts a "
+            "Reply to every 1-2 star review within 48h. Use this repo's reply queue: Gemini drafts a "
             "category-specific reply, a support agent edits and posts.",
             "When a fix ships for a category, reply again to those reviewers: 'Fixed in 12.x, please update'.",
             "Route reviews that name a company/route/date to that client's transport desk as a ticket.",

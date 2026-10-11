@@ -2,28 +2,27 @@
 
 Engines (pick with --engine, or LLM_PROVIDER in .env):
   * gemini  - Google Gemini with JSON-schema output (free tier works; used when GEMINI_API_KEY is set)
-  * claude  - Claude API with structured JSON output (used when ANTHROPIC_API_KEY is set)
-  * keyword - regex fallback so the pipeline and dashboard work with no key / no cost
+  * keyword - regex rules, so the pipeline and dashboard work with no key / no cost
 
-Incremental: reviews already tagged by an AI engine are never re-sent.
+Backup when Gemini can't run: reviews it hasn't tagged go to a local ML model trained on Gemini's own
+labels (pipeline/local_model.py, tagged "local-ml"); keyword rules are the last resort.
+
+Incremental: reviews already tagged by Gemini are never re-sent.
 """
 import json
 import os
 import re
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 
 from pipeline.config import CLASSIFIED_CSV, DATA_DIR, REVIEWS_CSV
 from pipeline.taxonomy import CATEGORIES
 
-CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-5-5")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-AI_ENGINES = ("claude", "gemini")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")  # free tier: separate daily quota from flash
+AI_ENGINES = ("gemini",)
 CHECKPOINT = DATA_DIR / ".gemini_checkpoint.json"
-BATCH_SIZE = 40
-WORKERS = 4
+BATCH_SIZE = int(os.getenv("GEMINI_BATCH_SIZE", "150"))  # big batches = few requests, fits the free daily quota
 CAT_KEYS = list(CATEGORIES)
 
 TAG_COLS = ["categories", "primary_category", "sentiment", "severity", "summary", "classifier"]
@@ -48,7 +47,7 @@ def keyword_tag(text: str, score: int) -> dict:
             "summary": "", "classifier": "keyword"}
 
 
-# ---------------------------------------------------------------- claude engine
+# ---------------------------------------------------------------- gemini engine
 SYSTEM_PROMPT = f"""You label Google Play reviews of MoveInSync, an employee commute app used by
 corporate employees in India to book office cabs/shuttles, track the vehicle, board with OTP, and raise issues.
 Reviews may be in English, Hindi, Hinglish or other Indian languages.
@@ -65,7 +64,7 @@ For each review return:
 Category keys:
 {chr(10).join(f"- {k}: {v['label']}" for k, v in CATEGORIES.items())}
 
-Distinguish carefully: a cab arriving late is cab_delay_noshow (operations), but the app showing the
+Distinguish carefully: a cab arriving late is cab_delay (operations), but the app showing the
 wrong cab position is tracking_eta (app). Booking window/cut-off rules are booking_scheduling."""
 
 SCHEMA = {
@@ -93,26 +92,12 @@ SCHEMA = {
 }
 
 
-def _claude_batch(client, batch: pd.DataFrame) -> dict[str, dict]:
-    resp = client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=16000,
-        system=SYSTEM_PROMPT,
-        output_config={"effort": "low", "format": {"type": "json_schema", "schema": SCHEMA}},
-        messages=[{"role": "user", "content": _payload(batch)}],
-    )
-    if resp.stop_reason == "refusal":
-        return {}
-    text = next(b.text for b in resp.content if b.type == "text")
-    return _parse(text, "claude")
-
-
 def _payload(batch: pd.DataFrame) -> str:
     rows = [{"id": str(r.reviewId), "stars": int(r.score), "text": str(r.content)[:1500]} for r in batch.itertuples()]
     return "Label these reviews:\n" + json.dumps(rows, ensure_ascii=False)
 
 
-def _parse(text: str, engine: str) -> dict[str, dict]:
+def _parse(text: str) -> dict[str, dict]:
     out = {}
     for r in json.loads(text)["results"]:
         if r.get("primary_category") not in CATEGORIES:
@@ -120,33 +105,16 @@ def _parse(text: str, engine: str) -> dict[str, dict]:
         cats = [c for c in r["categories"] if c in CATEGORIES] or [r["primary_category"]]
         out[str(r["id"])] = {"categories": "|".join(dict.fromkeys(cats)), "primary_category": r["primary_category"],
                              "sentiment": r["sentiment"], "severity": r["severity"], "summary": r["summary"],
-                             "classifier": engine}
+                             "classifier": "gemini"}
     return out
 
 
-def claude_tag(df: pd.DataFrame) -> dict[str, dict]:
-    import anthropic
-    client = anthropic.Anthropic()
-    batches = [df.iloc[i:i + BATCH_SIZE] for i in range(0, len(df), BATCH_SIZE)]
-    results: dict[str, dict] = {}
-    with ThreadPoolExecutor(WORKERS) as pool:
-        futures = {pool.submit(_claude_batch, client, b): i for i, b in enumerate(batches)}
-        for n, f in enumerate(as_completed(futures), 1):
-            try:
-                results.update(f.result())
-            except anthropic.APIError as e:
-                print(f"[classify] batch {futures[f]} failed: {e}")  # these fall back to keyword tags
-            if n % 10 == 0 or n == len(batches):
-                print(f"[classify] claude: {n}/{len(batches)} batches")
-    return results
-
-
-# ---------------------------------------------------------------- gemini engine
 def gemini_tag(df: pd.DataFrame) -> dict[str, dict]:
     """Sequential with backoff: the free tier allows only a few requests per minute."""
     from google import genai
     from google.genai import errors, types
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    # timeout so a dropped connection raises (and is retried) instead of hanging forever
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"], http_options=types.HttpOptions(timeout=120_000))
     cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json",
                                       response_json_schema=SCHEMA, temperature=0)
     # checkpoint so a dropped connection or Ctrl+C never loses finished batches
@@ -159,44 +127,46 @@ def gemini_tag(df: pd.DataFrame) -> dict[str, dict]:
         for attempt in range(6):
             try:
                 resp = client.models.generate_content(model=GEMINI_MODEL, contents=_payload(b), config=cfg)
-                results.update(_parse(resp.text, "gemini"))
+                results.update(_parse(resp.text))
                 break
             except errors.ClientError as e:
                 if e.code != 429:  # bad key / bad request: retrying won't help
                     print(f"[classify] gemini batch {n} failed: {e}")
                     break
+                if "PerDay" in str(e):  # daily free-tier quota: stop now, resume tomorrow from the checkpoint
+                    print(f"[classify] gemini daily quota reached for {GEMINI_MODEL}; "
+                          f"{len(results)} reviews tagged so far, rest use keyword tags until the next run")
+                    CHECKPOINT.write_text(json.dumps(results))
+                    return results
                 wait = 20 * (attempt + 1)
-                print(f"[classify] gemini rate limit, waiting {wait}s")
+                print(f"[classify] gemini per-minute limit, waiting {wait}s")
                 time.sleep(wait)
             except Exception as e:  # server errors, network drops, malformed JSON
                 wait = 15 * (attempt + 1)
                 print(f"[classify] gemini batch {n} error ({type(e).__name__}), retrying in {wait}s")
                 time.sleep(wait)
-        if n % 5 == 0 or n == len(batches):
-            CHECKPOINT.write_text(json.dumps(results))
-            print(f"[classify] gemini: {n}/{len(batches)} batches, {len(results)} reviews tagged")
+        CHECKPOINT.write_text(json.dumps(results))
+        print(f"[classify] gemini: {n}/{len(batches)} batches, {len(results)} reviews tagged")
     return results
 
 
 def default_engine() -> str:
     pref = os.getenv("LLM_PROVIDER", "").lower()
-    if pref in (*AI_ENGINES, "keyword"):
+    if pref in ("gemini", "keyword"):
         return pref
-    if os.getenv("GEMINI_API_KEY"):
-        return "gemini"
-    return "claude" if os.getenv("ANTHROPIC_API_KEY") else "keyword"
+    return "gemini" if os.getenv("GEMINI_API_KEY") else "keyword"
 
 
 # ---------------------------------------------------------------- driver
 def run(engine: str | None = None, since: str | None = None, limit: int | None = None) -> pd.DataFrame:
-    """engine: 'gemini' | 'claude' | 'keyword' | None (auto from LLM_PROVIDER / available keys)."""
+    """engine: 'gemini' | 'keyword' | None (auto from LLM_PROVIDER / GEMINI_API_KEY)."""
     engine = engine or default_engine()
     reviews = pd.read_csv(REVIEWS_CSV)
     reviews["at"] = pd.to_datetime(reviews["at"])
 
     prev = pd.read_csv(CLASSIFIED_CSV) if CLASSIFIED_CSV.exists() else pd.DataFrame(columns=["reviewId", *TAG_COLS])
     prev = prev[["reviewId", *TAG_COLS]].drop_duplicates("reviewId")
-    # only send the AI what no AI engine has tagged before (keeps reruns cheap)
+    # only send Gemini what it hasn't tagged before (keeps reruns within the free tier)
     ai_prev = prev[prev["classifier"].isin(AI_ENGINES)]
     done = set(ai_prev["reviewId"].astype(str))
     has_text = reviews["content"].fillna("").str.strip().str.len() > 0
@@ -207,19 +177,26 @@ def run(engine: str | None = None, since: str | None = None, limit: int | None =
         todo = todo.head(limit)
 
     print(f"[classify] engine={engine} reviews to tag: {len(todo)}")
-    tags = {}
-    if len(todo) and engine == "claude":
-        tags = claude_tag(todo)
-    elif len(todo) and engine == "gemini":
-        tags = gemini_tag(todo)
-    # keyword tags for everything the AI didn't tag (also covers failed batches)
+    tags = gemini_tag(todo) if engine == "gemini" and len(todo) else {}
+    # backup for everything Gemini didn't tag (no key, quota used up, failed batches):
+    # 1) a local ML model trained on Gemini's own labels, 2) keyword rules if there aren't enough labels yet
+    rest = reviews[has_text & ~reviews["reviewId"].astype(str).isin(set(tags) | done)]
+    if len(rest):
+        from pipeline import local_model
+        labelled = pd.concat([ai_prev.astype({"reviewId": str}),
+                              pd.DataFrame.from_dict(tags, orient="index").rename_axis("reviewId").reset_index()])
+        labelled = labelled.merge(reviews.astype({"reviewId": str})[["reviewId", "content", "score"]], on="reviewId")
+        model = local_model.train(labelled)
+        if model:
+            print(f"[classify] local ML backup (trained on {len(labelled)} Gemini labels) tagging {len(rest)} reviews")
+            tags.update(model.tag(rest))
     for r in reviews[has_text].itertuples():
         rid = str(r.reviewId)
         if rid not in tags:
             tags[rid] = keyword_tag(r.content, int(r.score))
 
     new = pd.DataFrame.from_dict(tags, orient="index").rename_axis("reviewId").reset_index()
-    # never overwrite an existing AI tag with a keyword tag
+    # never overwrite an existing Gemini tag with a keyword tag
     new = new[~(new["reviewId"].isin(done) & (new["classifier"] == "keyword"))]
     tags_df = pd.concat([ai_prev.astype({"reviewId": str}), new], ignore_index=True).drop_duplicates("reviewId", keep="last")
 
@@ -227,15 +204,15 @@ def run(engine: str | None = None, since: str | None = None, limit: int | None =
     out.to_csv(CLASSIFIED_CSV, index=False)
     CHECKPOINT.unlink(missing_ok=True)  # merged into classified.csv
     print(f"[classify] wrote {len(out)} rows -> {CLASSIFIED_CSV.name} "
-          f"(AI-tagged: {out['classifier'].isin(AI_ENGINES).sum()})")
+          f"(Gemini-tagged: {out['classifier'].isin(AI_ENGINES).sum()})")
     return out
 
 
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("--engine", choices=["gemini", "claude", "keyword"])
-    ap.add_argument("--since", help="only send reviews on/after this date to the AI, e.g. 2025-10-01")
+    ap.add_argument("--engine", choices=["gemini", "keyword"])
+    ap.add_argument("--since", help="only send reviews on/after this date to Gemini, e.g. 2025-10-01")
     ap.add_argument("--limit", type=int)
     a = ap.parse_args()
     run(a.engine, a.since, a.limit)

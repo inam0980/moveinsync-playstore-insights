@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 try:  # Streamlit Cloud: keys live in st.secrets
-    for _k in ("GEMINI_API_KEY", "ANTHROPIC_API_KEY", "LLM_PROVIDER"):
+    for _k in ("GEMINI_API_KEY", "LLM_PROVIDER"):
         if _k in st.secrets:
             os.environ[_k] = st.secrets[_k]
 except Exception:
@@ -56,7 +56,8 @@ with st.sidebar:
     st.caption(f"Latest review: **{df_all['at'].max():%d %b %Y}**")
     ai = df_all[df_all["classifier"].isin(AI_ENGINES)]
     engines = ", ".join(sorted(ai["classifier"].unique())) or "none yet"
-    st.caption(f"Tagged by AI ({engines}): **{len(ai):,}** reviews; rest by keyword rules")
+    n_ml = (df_all["classifier"] == "local-ml").sum()
+    st.caption(f"Tagged by AI ({engines}): **{len(ai):,}** · local ML backup: **{n_ml:,}** · rest: keyword rules")
     st.caption("Data refreshes weekly via GitHub Actions.")
 
 df = df_all[df_all["app_id"] == app_id]
@@ -309,7 +310,7 @@ with tab_method:
 headline rating, so the rating history builds over time.
 
 **Tagging.** Each review is labelled with one or more issues from a taxonomy that follows the employee journey
-(login → book → pickup time → track → board → ride → raise an issue). An LLM (Gemini or Claude, switchable) reads the
+(login → book → pickup time → track → board → ride → raise an issue). Google Gemini reads the
 review (including Hindi/Hinglish) and returns the issues, the main issue, severity, and a one-line summary as validated JSON. Without an API key, a
 keyword-rule fallback is used so the dashboard always works.
 

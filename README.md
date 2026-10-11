@@ -1,7 +1,7 @@
 # MoveInSync Play Store Insights
 
 **Why are MoveInSync's Play Store ratings low, and what should we fix first?**
-A repeatable pipeline that pulls every public Google Play review of MoveInSync's apps, uses an LLM (Gemini or Claude, switchable) to tag each
+A repeatable pipeline that pulls every public Google Play review of MoveInSync's apps, uses Google Gemini to tag each
 review against the employee commute journey, ranks issues by how many rating points they cost, and turns that
 into a prioritised action plan. It re-runs weekly, so *"How are our Play Store ratings?"* always has a current answer.
 
@@ -28,7 +28,7 @@ into a prioritised action plan. It re-runs weekly, so *"How are our Play Store r
    rider gives 4–5★ in-app after an on-time trip, trigger Google's **In-App Review API** (max once per 90 days). Route
    1–3★ in-app ratings to a *"What went wrong?"* ticket instead. *Owner: Product + App Eng · Effort: 1 sprint.*
 2. **Restart replying to reviews within 48h.** Reviewers can update their rating after a reply. The dashboard's
-   **Reply queue** drafts a specific reply with the LLM for each unanswered 1–2★ review; support edits and posts.
+   **Reply queue** drafts a specific reply with Gemini for each unanswered 1–2★ review; support edits and posts.
    *Owner: Support · Effort: start now.*
 3. **Gate releases on review health.** Ship via staged rollout (5% → 20% → 100%) and run this pipeline daily during
    rollout. If the new version's 1★ share is 7+ pp above baseline, halt. The GitHub Action already exits non-zero
@@ -51,7 +51,7 @@ Every item in the dashboard has a success metric, effort and real user quotes as
 
 ```
 Google Play ──► scrape.py ──► reviews.csv ──► classify.py ──► classified.csv ──► analyze.py ──► app.py (Streamlit)
-  (public)     incremental     (de-duped)    Gemini/Claude,   (+ issue tags)    stars at stake,   dashboard + action plan
+  (public)     incremental     (de-duped)    Gemini, JSON     (+ issue tags)    stars at stake,   dashboard + action plan
                 + rating                     schema; keyword                     releases, trends   + reply queue
                 snapshot                     fallback                                     ▲
                                                                                           │
@@ -67,7 +67,7 @@ Google Play ──► scrape.py ──► reviews.csv ──► classify.py ─�
 ```bash
 python -m venv venv && venv\Scripts\activate      # Windows (source venv/bin/activate on Mac/Linux)
 pip install -r requirements.txt
-copy .env.example .env                              # add GEMINI_API_KEY and/or ANTHROPIC_API_KEY (optional)
+copy .env.example .env                              # add GEMINI_API_KEY (optional, free)
 python -m pipeline.run                              # scrape + tag + print health report
 streamlit run app.py                                # dashboard at http://localhost:8501
 ```
@@ -79,10 +79,10 @@ app.py                      Streamlit dashboard
 pipeline/config.py          apps tracked, paths
 pipeline/scrape.py          incremental review + rating-snapshot scraper
 pipeline/taxonomy.py        issue categories mapped to the employee journey, owner per issue
-pipeline/classify.py        LLM tagging (Gemini or Claude, JSON-schema output, resumable) + keyword fallback
+pipeline/classify.py        Gemini tagging (JSON-schema output, resumable) + keyword fallback
 pipeline/analyze.py         stars at stake, trends, release regressions, devices, reply queue
 pipeline/recommendations.py action playbook (fix, owner, effort, metric)
-pipeline/replies.py         LLM-drafted replies to reviews
+pipeline/replies.py         Gemini-drafted replies to reviews
 pipeline/run.py             one-command refresh; exits 2 on release regression (for CI alerts)
 .github/workflows/refresh.yml  weekly scheduled refresh
 data/                       reviews, tags, rating snapshots (committed so the dashboard needs no backend)
@@ -93,12 +93,12 @@ data/                       reviews, tags, rating snapshots (committed so the da
   tracked too, but have few reviews.
 - **Written reviews are a vocal subset.** The all-time headline score includes star-only taps. The goal is to move
   the recent written-review mix, which drives the displayed score and what store visitors read.
-- **Public data only** (Google Play, India store). Hinglish/Hindi reviews are included; the LLM reads them natively.
+- **Public data only** (Google Play, India store). Hinglish/Hindi reviews are included; Gemini reads them natively.
 - **Stars at stake is an upper bound** on what fixing an issue can recover. It is for ranking, not forecasting.
 - **Unstated 1★ reviews** ("worst app") can't be attributed. That's why recommendation 1 captures *what went wrong*
   in-app before the user reaches the store.
 
 ## Tools used
-Python · google-play-scraper · pandas · **Google Gemini API** (review tagging with JSON-schema output, reply drafting; Claude API supported as a drop-in alternative) ·
+Python · google-play-scraper · pandas · **Google Gemini API** (review tagging with JSON-schema output, reply drafting) ·
 Streamlit + Plotly · GitHub Actions (weekly refresh) · Streamlit Community Cloud (hosting) ·
 Claude Code (AI pair-programmer for building the pipeline).
