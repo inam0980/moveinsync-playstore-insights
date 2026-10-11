@@ -7,20 +7,20 @@ from html import escape
 import streamlit as st
 
 # Fixed color per owning team (assigned in order, never by rank)
-OWNER_COLORS = {"App Engineering": "#2a78d6", "Product": "#eb6834", "Operations": "#1baf7a", "Support": "#eda100"}
+OWNER_COLORS = {"App Engineering": "#1a56db", "Product": "#ea580c", "Operations": "#16a34a", "Support": "#d97706"}
 OWNER_ICONS = {"App Engineering": "📱", "Product": "🧩", "Operations": "🚕", "Support": "🎧"}
 GOOD, BAD, NEUTRAL = "#0ca30c", "#d03b3b", "#898781"
 
 CSS = """
 <style>
-:root { --ink:#1b1b2f; --ink2:#55566b; --card:#ffffff; --line:rgba(27,27,47,.08); }
+:root { --ink:#0f1b33; --ink2:#4a5878; --card:#ffffff; --line:rgba(15,27,51,.08); --b1:#0b3d91; --b2:#1a56db; --g1:#16a34a; }
 .block-container { padding-top: 1.6rem; }
-[data-testid="stSidebar"] { background: linear-gradient(180deg,#eef0ff 0%,#f4fbf8 100%); }
+[data-testid="stSidebar"] { background: linear-gradient(180deg,#e8f0ff 0%,#eefaf2 100%); border-right:1px solid var(--line); }
 
 /* hero */
-.hero { background: linear-gradient(120deg,#4f46e5 0%,#2a78d6 50%,#14b8a6 100%); color:#fff;
+.hero { background: linear-gradient(120deg,var(--b1) 0%,var(--b2) 55%,var(--g1) 100%); color:#fff;
         border-radius:20px; padding:26px 30px; margin-bottom:18px; position:relative; overflow:hidden;
-        box-shadow:0 10px 30px rgba(79,70,229,.25); }
+        box-shadow:0 12px 32px rgba(11,61,145,.28); }
 .hero:after { content:""; position:absolute; right:-60px; top:-60px; width:240px; height:240px;
               background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%); }
 .hero h1 { color:#fff; font-size:1.9rem; line-height:1.25; margin:0 0 6px 0; padding:0; }
@@ -38,22 +38,22 @@ CSS = """
 .delta { display:inline-block; font-size:.78rem; font-weight:700; padding:2px 9px; border-radius:999px; }
 
 /* verdict */
-.verdict { background:linear-gradient(135deg,#fff7ed,#fdf2f8); border:1px solid #fbcfe8; border-left:6px solid #ec4899;
+.verdict { background:linear-gradient(135deg,#eaf1ff,#ecfdf3); border:1px solid #c7d7fe; border-left:6px solid var(--b2);
            border-radius:16px; padding:18px 22px; margin:4px 0 18px; color:var(--ink); }
-.verdict b { color:#9d174d; }
+.verdict b { color:var(--b1); }
 .split { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
 .pill { padding:6px 12px; border-radius:999px; font-weight:700; font-size:.85rem; color:#fff; }
 
 /* tabs */
 .stTabs [data-baseweb="tab-list"] { gap:8px; flex-wrap:wrap; }
-.stTabs [data-baseweb="tab"] { background:#eef0fa; border-radius:999px; padding:8px 16px; height:auto; }
-.stTabs [aria-selected="true"] { background:linear-gradient(120deg,#4f46e5,#2a78d6); color:#fff !important; }
+.stTabs [data-baseweb="tab"] { background:#e6edfb; border-radius:999px; padding:8px 16px; height:auto; }
+.stTabs [aria-selected="true"] { background:linear-gradient(120deg,var(--b1),var(--b2) 60%,var(--g1)); color:#fff !important; }
 .stTabs [aria-selected="true"] p { color:#fff !important; }
 .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] { display:none; }
 
 /* section headings */
 .sec { font-size:1.25rem; font-weight:800; color:var(--ink); margin:14px 0 4px; }
-.sec span { background:linear-gradient(120deg,#4f46e5,#14b8a6); -webkit-background-clip:text; background-clip:text;
+.sec span { background:linear-gradient(120deg,var(--b1),var(--b2) 50%,var(--g1)); -webkit-background-clip:text; background-clip:text;
             color:transparent; }
 .sub { color:var(--ink2); font-size:.9rem; margin-bottom:10px; }
 
@@ -70,7 +70,7 @@ CSS = """
        background:var(--bg); color:var(--fg); }
 
 /* review quotes */
-.quote { background:#f6f7ff; border-left:4px solid var(--qc); border-radius:4px 14px 14px 4px; padding:10px 14px;
+.quote { background:#f1f5ff; border-left:4px solid var(--qc); border-radius:4px 14px 14px 4px; padding:10px 14px;
          margin:8px 0; color:var(--ink); font-size:.92rem; }
 .quote .meta { color:var(--ink2); font-size:.78rem; margin-top:4px; }
 </style>
@@ -114,7 +114,7 @@ def section(title: str, subtitle: str = "") -> None:
     st.markdown(f'<div class="sec"><span>{escape(title)}</span></div>{sub}', unsafe_allow_html=True)
 
 
-WIN_GRADIENTS = [("#ec4899", "#f97316"), ("#4f46e5", "#06b6d4"), ("#10b981", "#84cc16")]
+WIN_GRADIENTS = [("#0b3d91", "#1a56db"), ("#15803d", "#22c55e"), ("#d97706", "#f59e0b")]
 
 
 def tag(text: str, color: str) -> str:
@@ -124,7 +124,7 @@ def tag(text: str, color: str) -> str:
 def win_card(i: int, title: str, why: str, steps: list[str], owner: str, effort: str, metric: str) -> None:
     c1, c2 = WIN_GRADIENTS[(i - 1) % len(WIN_GRADIENTS)]
     items = "".join(f"<li>{escape(s)}</li>" for s in steps)
-    tags = tag(f"👥 {owner}", "#4f46e5") + tag(f"⏱ {effort}", "#0891b2") + tag(f"📏 {metric}", "#059669")
+    tags = tag(f"👥 {owner}", "#1a56db") + tag(f"⏱ {effort}", "#0891b2") + tag(f"📏 {metric}", "#059669")
     st.markdown(f'<div class="win" style="--c1:{c1};--c2:{c2}"><div class="num">{i}</div><div>'
                 f'<h4>{escape(title)}</h4><div class="why">{escape(why)}</div><ul>{items}</ul>{tags}</div></div>',
                 unsafe_allow_html=True)
@@ -139,8 +139,8 @@ def quote(text: str, meta: str, stars: int) -> None:
 def style_fig(fig, height: int):
     """Common chart chrome: transparent background, soft grid, readable font."""
     fig.update_layout(height=height, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                      font=dict(family="system-ui, -apple-system, Segoe UI, sans-serif", color="#33344a"),
+                      font=dict(family="system-ui, -apple-system, Segoe UI, sans-serif", color="#24324f"),
                       margin=dict(l=0, r=10, t=30, b=0), hoverlabel=dict(bgcolor="white", font_size=13))
-    fig.update_xaxes(gridcolor="rgba(27,27,47,.07)", zeroline=False)
-    fig.update_yaxes(gridcolor="rgba(27,27,47,.07)", zeroline=False)
+    fig.update_xaxes(gridcolor="rgba(15,27,51,.07)", zeroline=False)
+    fig.update_yaxes(gridcolor="rgba(15,27,51,.07)", zeroline=False)
     return fig

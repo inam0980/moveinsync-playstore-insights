@@ -32,7 +32,7 @@ ui.inject_css()
 OWNER_COLORS = ui.OWNER_COLORS
 CRITICAL = "#d03b3b"
 MUTED = "#898781"
-SERIES = "#2a78d6"
+SERIES = "#1a56db"
 
 
 @st.cache_data(ttl=3600)
@@ -82,8 +82,8 @@ cards = []
 if not snap.empty:
     s = snap.iloc[0]
     cards.append({"label": "Play Store rating (all-time)", "value": f"{s['score']:.2f} ★", "icon": "⭐",
-                  "accent": "#6250d6", "delta": f"{int(s['ratings']):,} ratings", "good": None})
-cards.append({"label": "Written reviews · last 90d", "value": f"{c['avg']:.2f} ★", "icon": "✍️", "accent": "#2a78d6",
+                  "accent": "#0b3d91", "delta": f"{int(s['ratings']):,} ratings", "good": None})
+cards.append({"label": "Written reviews · last 90d", "value": f"{c['avg']:.2f} ★", "icon": "✍️", "accent": "#1a56db",
               "delta": f"{c['avg'] - p['avg']:+.2f} vs prior 90d", "good": c["avg"] >= p["avg"]})
 cards.append({"label": "1-star share · last 90d", "value": f"{c['one_star']:.0%}", "icon": "😡", "accent": "#d03b3b",
               "delta": f"{(c['one_star'] - p['one_star']) * 100:+.1f} pp", "good": c["one_star"] <= p["one_star"]})
@@ -93,7 +93,7 @@ cards.append({"label": "Reply rate on 1-2★", "value": f"{c['reply_rate']:.0%}"
 latest = ver.iloc[-1] if not ver.empty else None
 if latest is not None:
     cards.append({"label": f"Latest version {latest['reviewCreatedVersion']}", "value": f"{latest['one_star']:.0%} 1★",
-                  "icon": "🚀", "accent": "#1baf7a",
+                  "icon": "🚀", "accent": "#16a34a",
                   "delta": f"{latest['delta_pp']:+.1f} pp vs recent releases" + (" ⚠" if latest["regression"] else ""),
                   "good": not latest["regression"]})
 ui.kpi_cards(cards)
@@ -205,7 +205,7 @@ with tab_trend:
     with a:
         ui.section("⭐ Average stars of written reviews, by month")
         f = px.area(m, x="month", y="avg", markers=True, labels={"month": "", "avg": "Avg stars"})
-        f.update_traces(line=dict(width=2.5, color="#6250d6"), fillcolor="rgba(98,80,214,.12)", marker=dict(size=8),
+        f.update_traces(line=dict(width=2.5, color="#1a56db"), fillcolor="rgba(26,86,219,.12)", marker=dict(size=8),
                         hovertemplate="%{x|%b %Y}: %{y:.2f}★<extra></extra>")
         ui.style_fig(f, 300).update_layout(hovermode="x unified", yaxis_range=[1, 5])
         st.plotly_chart(f, width="stretch")
