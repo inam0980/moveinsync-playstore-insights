@@ -26,13 +26,16 @@ from pipeline.replies import draft  # noqa: E402
 from pipeline.taxonomy import ISSUE_CATEGORIES, label  # noqa: E402
 import ui  # noqa: E402
 
-st.set_page_config(page_title="MoveInSync Play Store Insights", page_icon="🚕", layout="wide")
+st.set_page_config(page_title="MoveInSync Play Store Insights",
+                   page_icon=str(ui.LOGO) if ui.LOGO.exists() else "🚕", layout="wide")
 ui.inject_css()
+if ui.LOGO.exists():
+    st.logo(str(ui.LOGO), size="large")
 
 OWNER_COLORS = ui.OWNER_COLORS
-CRITICAL = "#d03b3b"
-MUTED = "#898781"
-SERIES = "#1a56db"
+CRITICAL = "#f87171"
+MUTED = "#94a3b8"
+SERIES = "#a78bfa"
 
 
 @st.cache_data(ttl=3600)
@@ -81,20 +84,20 @@ c = k["current"]; p = k["previous"]
 cards = []
 if not snap.empty:
     s = snap.iloc[0]
-    cards.append({"label": "Play Store rating (all-time)", "value": f"{s['score']:.2f} ★", "icon": "⭐",
-                  "accent": "#0b3d91", "delta": f"{int(s['ratings']):,} ratings", "good": None})
-cards.append({"label": "Written reviews · last 90d", "value": f"{c['avg']:.2f} ★", "icon": "✍️", "accent": "#1a56db",
+    cards.append({"label": "Play Store rating", "value": f"{s['score']:.2f} ★", "icon": "⭐",
+                  "accent": "#a78bfa", "delta": f"{int(s['ratings']):,} ratings", "good": None})
+cards.append({"label": "Review avg · 90d", "value": f"{c['avg']:.2f} ★", "icon": "✍️", "accent": "#22d3ee",
               "delta": f"{c['avg'] - p['avg']:+.2f} vs prior 90d", "good": c["avg"] >= p["avg"]})
-cards.append({"label": "1-star share · last 90d", "value": f"{c['one_star']:.0%}", "icon": "😡", "accent": "#d03b3b",
+cards.append({"label": "1★ share · 90d", "value": f"{c['one_star']:.0%}", "icon": "😡", "accent": "#f87171",
               "delta": f"{(c['one_star'] - p['one_star']) * 100:+.1f} pp", "good": c["one_star"] <= p["one_star"]})
-cards.append({"label": "Reply rate on 1-2★", "value": f"{c['reply_rate']:.0%}", "icon": "💬", "accent": "#eda100",
-              "delta": "almost nobody answered" if c["reply_rate"] < 0.1 else f"{(c['reply_rate'] - p['reply_rate']) * 100:+.1f} pp",
+cards.append({"label": "Reply rate · 1-2★", "value": f"{c['reply_rate']:.0%}", "icon": "💬", "accent": "#facc15",
+              "delta": "nobody answers" if c["reply_rate"] < 0.1 else f"{(c['reply_rate'] - p['reply_rate']) * 100:+.1f} pp",
               "good": c["reply_rate"] >= 0.5})
 latest = ver.iloc[-1] if not ver.empty else None
 if latest is not None:
-    cards.append({"label": f"Latest version {latest['reviewCreatedVersion']}", "value": f"{latest['one_star']:.0%} 1★",
-                  "icon": "🚀", "accent": "#16a34a",
-                  "delta": f"{latest['delta_pp']:+.1f} pp vs recent releases" + (" ⚠" if latest["regression"] else ""),
+    cards.append({"label": f"Latest v{latest['reviewCreatedVersion']}", "value": f"{latest['one_star']:.0%} 1★",
+                  "icon": "🚀", "accent": "#34d399",
+                  "delta": f"{latest['delta_pp']:+.1f} pp vs usual" + (" ⚠" if latest["regression"] else ""),
                   "good": not latest["regression"]})
 ui.kpi_cards(cards)
 
@@ -129,7 +132,8 @@ with tab_why:
                                     "(%{customdata[1]:.0%} of all 1-2★)<br>Trend (90d): %{customdata[2]:+.1f} pp"
                                     "<br>Owner: %{customdata[3]}<extra></extra>",
                       marker_line_width=0)
-    ui.style_fig(fig, 480).update_layout(bargap=0.3, legend=dict(orientation="h", y=1.08, x=0, title=None))
+    ui.style_fig(fig, 480).update_layout(bargap=0.3, legend=dict(orientation="h", y=1.08, x=0, title=None),
+                                         yaxis=dict(categoryorder="total ascending"))
     fig.update_traces(texttemplate="%{x:.2f}", textposition="outside", cliponaxis=False)
     st.plotly_chart(fig, width="stretch")
 
@@ -139,7 +143,7 @@ with tab_why:
         split = A.owner_split(imp)
         f2 = px.pie(split, names="owner", values="stars_at_stake", color="owner", color_discrete_map=OWNER_COLORS,
                     hole=0.55)
-        f2.update_traces(textinfo="label+percent", marker=dict(line=dict(color="white", width=3)),
+        f2.update_traces(textinfo="label+percent", marker=dict(line=dict(color=ui.SURFACE, width=4)),
                          hovertemplate="%{label}: %{value:.3f} stars<extra></extra>")
         ui.style_fig(f2, 320).update_layout(showlegend=False)
         st.plotly_chart(f2, width="stretch")
@@ -150,7 +154,7 @@ with tab_why:
         f3.update_traces(marker_color=[ui.BAD if v > 1 else ui.GOOD if v < -1 else ui.NEUTRAL for v in t["trend_pp"]],
                          hovertemplate="%{y}: %{x:+.1f} pp<extra></extra>", texttemplate="%{x:+.1f}",
                          textposition="outside", cliponaxis=False)
-        ui.style_fig(f3, 320).update_layout(bargap=0.3)
+        ui.style_fig(f3, 320).update_layout(bargap=0.3, yaxis=dict(categoryorder="array", categoryarray=list(t["issue"])))
         st.plotly_chart(f3, width="stretch")
 
     with st.expander("Full table"):
@@ -205,14 +209,14 @@ with tab_trend:
     with a:
         ui.section("⭐ Average stars of written reviews, by month")
         f = px.area(m, x="month", y="avg", markers=True, labels={"month": "", "avg": "Avg stars"})
-        f.update_traces(line=dict(width=2.5, color="#1a56db"), fillcolor="rgba(26,86,219,.12)", marker=dict(size=8),
+        f.update_traces(line=dict(width=3, color="#a78bfa"), fillcolor="rgba(167,139,250,.18)", marker=dict(size=8),
                         hovertemplate="%{x|%b %Y}: %{y:.2f}★<extra></extra>")
         ui.style_fig(f, 300).update_layout(hovermode="x unified", yaxis_range=[1, 5])
         st.plotly_chart(f, width="stretch")
     with b:
         ui.section("😡 Share of 1-star reviews, by month")
         f = px.area(m, x="month", y="one_star", markers=True, labels={"month": "", "one_star": "1-star share"})
-        f.update_traces(line=dict(width=2.5, color=CRITICAL), fillcolor="rgba(208,59,59,.10)", marker=dict(size=8),
+        f.update_traces(line=dict(width=2.5, color=CRITICAL), fillcolor="rgba(248,113,113,.16)", marker=dict(size=8),
                         hovertemplate="%{x|%b %Y}: %{y:.0%}<extra></extra>")
         ui.style_fig(f, 300).update_layout(yaxis_tickformat=".0%", hovermode="x unified")
         st.plotly_chart(f, width="stretch")
@@ -221,7 +225,7 @@ with tab_trend:
     rq = df[df["negative"]].assign(q=lambda x: x["at"].dt.to_period("Q").dt.to_timestamp()).groupby("q")["replied"].mean().reset_index()
     rq = rq[rq["q"] >= pd.Timestamp("2021-01-01")]
     f = px.bar(rq, x="q", y="replied", labels={"q": "", "replied": "Reply rate"})
-    f.update_traces(marker_color=[ui.GOOD if v >= 0.5 else "#eda100" if v >= 0.1 else ui.BAD for v in rq["replied"]],
+    f.update_traces(marker_color=[ui.GOOD if v >= 0.5 else "#facc15" if v >= 0.1 else ui.BAD for v in rq["replied"]],
                     marker_line_width=0, hovertemplate="%{x|Q%q %Y}: %{y:.0%}<extra></extra>")
     ui.style_fig(f, 260).update_layout(yaxis_tickformat=".0%", bargap=0.3)
     st.plotly_chart(f, width="stretch")
@@ -231,7 +235,7 @@ with tab_trend:
     vv = ver.tail(20).copy()
     vv["status"] = vv["regression"].map({True: "⚠ Regression", False: "Normal"})
     f = go.Figure()
-    f.add_bar(x=vv["reviewCreatedVersion"].astype(str), y=vv["one_star"],
+    f.add_bar(x=vv["reviewCreatedVersion"].astype(str), y=vv["one_star"], name="1★ share (red = regression)",
               marker_color=[CRITICAL if r else SERIES for r in vv["regression"]], marker_line_width=0,
               customdata=vv[["n", "avg", "delta_pp", "status"]],
               hovertemplate="v%{x}<br>1-star: %{y:.0%}<br>Avg: %{customdata[1]:.2f}★ (%{customdata[0]} reviews)"
