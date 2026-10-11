@@ -11,13 +11,15 @@ import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
-try:  # Streamlit Cloud: key lives in st.secrets
-    if "ANTHROPIC_API_KEY" in st.secrets:
-        os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
+try:  # Streamlit Cloud: keys live in st.secrets
+    for _k in ("GEMINI_API_KEY", "ANTHROPIC_API_KEY", "LLM_PROVIDER"):
+        if _k in st.secrets:
+            os.environ[_k] = st.secrets[_k]
 except Exception:
     pass
 
 from pipeline import analyze as A  # noqa: E402
+from pipeline.classify import AI_ENGINES, default_engine  # noqa: E402
 from pipeline.config import APPS, CLASSIFIED_CSV, PRIMARY_APP  # noqa: E402
 from pipeline.recommendations import PLAYBOOK, QUICK_WINS  # noqa: E402
 from pipeline.replies import draft  # noqa: E402
@@ -52,8 +54,9 @@ with st.sidebar:
     st.divider()
     st.caption(f"Reviews stored: **{len(df_all):,}**")
     st.caption(f"Latest review: **{df_all['at'].max():%d %b %Y}**")
-    share_claude = (df_all["classifier"] == "claude").mean()
-    st.caption(f"Tagged by Claude: **{share_claude:.0%}** (rest: keyword rules)")
+    ai = df_all[df_all["classifier"].isin(AI_ENGINES)]
+    engines = ", ".join(sorted(ai["classifier"].unique())) or "none yet"
+    st.caption(f"Tagged by AI ({engines}): **{len(ai):,}** reviews; rest by keyword rules")
     st.caption("Data refreshes weekly via GitHub Actions.")
 
 df = df_all[df_all["app_id"] == app_id]
@@ -283,7 +286,8 @@ with tab_explore:
 with tab_reply:
     st.subheader("Unanswered 1-2★ reviews (last 30 days)")
     st.caption("Draft a reply, edit it, then post it in Google Play Console → Ratings and reviews. "
-               + ("Drafts use Claude." if os.getenv("ANTHROPIC_API_KEY") else "No API key set: drafts use category templates."))
+               + (f"Drafts use {default_engine().title()}." if default_engine() in AI_ENGINES
+                  else "No API key set: drafts use category templates."))
     uq = A.unreplied_negative(df, 30)
     st.caption(f"{len(uq)} reviews waiting")
     for r in uq.head(15).itertuples():
@@ -305,8 +309,8 @@ with tab_method:
 headline rating, so the rating history builds over time.
 
 **Tagging.** Each review is labelled with one or more issues from a taxonomy that follows the employee journey
-(login → book → pickup time → track → board → ride → raise an issue). Claude reads the review (including Hindi/Hinglish)
-and returns the issues, the main issue, severity, and a one-line summary as validated JSON. Without an API key, a
+(login → book → pickup time → track → board → ride → raise an issue). An LLM (Gemini or Claude, switchable) reads the
+review (including Hindi/Hinglish) and returns the issues, the main issue, severity, and a one-line summary as validated JSON. Without an API key, a
 keyword-rule fallback is used so the dashboard always works.
 
 **Stars at stake.** For each issue: Σ(5 − stars) over reviews whose *main* complaint is that issue, ÷ all reviews in

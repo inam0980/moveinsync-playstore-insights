@@ -1,12 +1,14 @@
 """Draft developer replies to negative reviews (a human edits and posts them).
 
-Claude drafts when ANTHROPIC_API_KEY is set; otherwise a category template is used.
+Uses Gemini or Claude when a key is configured (same LLM_PROVIDER logic as classify.py);
+otherwise a category template is used.
 """
 import os
 
 from pipeline.taxonomy import label
 
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-5-5")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", "app@moveinsync.com")
 
 TEMPLATES = {
@@ -30,24 +32,36 @@ End by inviting them to email {email} with trip/company details. Reply in the re
 (English if mixed Hinglish is unclear). Output only the reply text."""
 
 
+def _claude(system: str, user: str) -> str:
+    import anthropic
+    resp = anthropic.Anthropic().messages.create(
+        model=CLAUDE_MODEL, max_tokens=2000, system=system, output_config={"effort": "low"},
+        messages=[{"role": "user", "content": user}])
+    if resp.stop_reason == "refusal":
+        return ""
+    return next((b.text for b in resp.content if b.type == "text"), "")
+
+
+def _gemini(system: str, user: str) -> str:
+    from google import genai
+    from google.genai import types
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    resp = client.models.generate_content(model=GEMINI_MODEL, contents=user,
+                                          config=types.GenerateContentConfig(system_instruction=system))
+    return resp.text or ""
+
+
 def draft(text: str, stars: int, category: str) -> tuple[str, str]:
     """Returns (reply, engine)."""
-    if os.getenv("ANTHROPIC_API_KEY"):
+    from pipeline.classify import default_engine
+    engine = default_engine()
+    system = PROMPT.format(email=SUPPORT_EMAIL)
+    user = f"Stars: {stars}\nIssue category: {label(category)}\nReview: {text}"
+    if engine in ("claude", "gemini"):
         try:
-            import anthropic
-            client = anthropic.Anthropic()
-            resp = client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=2000,
-                system=PROMPT.format(email=SUPPORT_EMAIL),
-                output_config={"effort": "low"},
-                messages=[{"role": "user", "content": f"Stars: {stars}\nIssue category: {label(category)}\n"
-                                                      f"Review: {text}"}],
-            )
-            if resp.stop_reason != "refusal":
-                reply = next((b.text for b in resp.content if b.type == "text"), "").strip()
-                if reply:
-                    return reply[:350], "claude"
-        except anthropic.APIError as e:
-            print(f"[replies] Claude draft failed, using template: {e}")
+            reply = (_claude if engine == "claude" else _gemini)(system, user).strip()
+            if reply:
+                return reply[:350], engine
+        except Exception as e:  # any provider error -> template, never break the dashboard
+            print(f"[replies] {engine} draft failed, using template: {e}")
     return TEMPLATES.get(category, DEFAULT).format(email=SUPPORT_EMAIL), "template"
