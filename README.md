@@ -53,7 +53,7 @@ Every item in the dashboard has a success metric, effort and real user quotes as
 Google Play ──► scrape.py ──► reviews.csv ──► classify.py ──► classified.csv ──► analyze.py ──► app.py (Streamlit)
   (public)     incremental     (de-duped)    Gemini, JSON     (+ issue tags)    stars at stake,   dashboard + action plan
                 + rating                     schema; keyword                     releases, trends   + reply queue
-                snapshot                     fallback                                     ▲
+                snapshot                     fallbackhere                                     ▲
                                                                                           │
                           GitHub Actions: every Monday 08:00 IST ── re-run + commit data ─┘
 ```
