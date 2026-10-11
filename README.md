@@ -5,7 +5,7 @@ A repeatable pipeline that pulls every public Google Play review of MoveInSync's
 review against the employee commute journey, ranks issues by how many rating points they cost, and turns that
 into a prioritised action plan. It re-runs weekly, so *"How are our Play Store ratings?"* always has a current answer.
 
-**▶ Live dashboard:** `<add Streamlit link>` · **Data:** 24,400+ reviews, 2014 – Oct 2026
+**▶ Live dashboard: [imovie.streamlit.app](https://imovie.streamlit.app)** · **Data:** 24,400+ reviews, 2014 – Oct 2026
 
 ---
 
