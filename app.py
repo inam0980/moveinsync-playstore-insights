@@ -116,7 +116,7 @@ ui.verdict(
 )
 
 tab_why, tab_plan, tab_trend, tab_explore, tab_reply, tab_method = st.tabs(
-    ["🔍 Why ratings are low", "✅ Action plan", "📈 Trends & releases", "🗂 Review explorer", "💬 Reply queue", "📘 Method"])
+    ["🔍 Why it's low", "✅ Action plan", "📈 Trends", "🗂 Reviews", "💬 Replies", "📘 Method"])
 
 # ------------------------------------------------------------------ WHY
 with tab_why:
@@ -132,8 +132,8 @@ with tab_why:
                                     "(%{customdata[1]:.0%} of all 1-2★)<br>Trend (90d): %{customdata[2]:+.1f} pp"
                                     "<br>Owner: %{customdata[3]}<extra></extra>",
                       marker_line_width=0)
-    ui.style_fig(fig, 480).update_layout(bargap=0.3, legend=dict(orientation="h", y=1.08, x=0, title=None),
-                                         yaxis=dict(categoryorder="total ascending"))
+    ui.style_fig(fig, 480).update_layout(bargap=0.3, legend=dict(orientation="h", y=1.02, yanchor="bottom", x=0, title=None),
+                                         yaxis=dict(categoryorder="total ascending"), margin=dict(t=60))
     fig.update_traces(texttemplate="%{x:.2f}", textposition="outside", cliponaxis=False)
     st.plotly_chart(fig, width="stretch")
 

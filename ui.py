@@ -45,7 +45,8 @@ CSS = """
 
 /* KPI cards */
 .kpis { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
-@media (max-width: 1100px) { .kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 1150px) { .kpis { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width: 760px) { .kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .kpi { background:linear-gradient(160deg,var(--card2),var(--card)); border-radius:18px; padding:16px 18px;
        border:1px solid var(--line); position:relative; overflow:hidden; transition:transform .15s, box-shadow .15s; }
 .kpi:before { content:""; position:absolute; inset:0 0 auto 0; height:3px; background:var(--accent);
@@ -64,16 +65,25 @@ CSS = """
 .split { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
 .pill { padding:6px 13px; border-radius:999px; font-weight:700; font-size:.84rem; color:#0b1020; }
 
-/* tabs (Streamlit renders them as div[role=tab]) */
-.stTabs div:has(> [role="tab"]) { gap:8px; flex-wrap:wrap; border-bottom:none !important; box-shadow:none !important; }
-.stTabs [role="tab"] { background:var(--card); border:1px solid var(--line); border-radius:999px;
-                       padding:8px 18px !important; transition:all .15s; }
-.stTabs [role="tab"]:hover { border-color:#a78bfa; box-shadow:0 0 16px -6px #a78bfa; }
-.stTabs [role="tab"] p { color:var(--ink2) !important; font-weight:600; }
+/* tabs: one segmented bar, equal-width pills, never wraps (Streamlit renders tabs as div[role=tab]) */
+.stTabs div:has(> [role="tab"]) { display:flex; flex-wrap:nowrap; gap:6px; width:100%; padding:6px;
+    background:var(--card); border:1px solid var(--line) !important; border-radius:999px;
+    overflow-x:auto; scrollbar-width:none; box-shadow:0 8px 24px -12px rgba(0,0,0,.6); }
+.stTabs div:has(> [role="tab"])::-webkit-scrollbar { display:none; }
+.stTabs div:has(> div > [role="tab"]), .stTabs div:has(> div > div > [role="tab"]) {
+    border-bottom:none !important; box-shadow:none !important; }
+.stTabs div:has(> div > [role="tab"])::before, .stTabs div:has(> div > [role="tab"])::after,
+.stTabs div:has(> [role="tab"])::before, .stTabs div:has(> [role="tab"])::after { display:none !important; }
+.stTabs [role="tab"] { flex:1 1 0; min-width:max-content; justify-content:center; text-align:center;
+    background:transparent; border:none; border-radius:999px; padding:9px 12px !important; transition:all .15s; }
+.stTabs [role="tab"]:hover { background:rgba(167,139,250,.12); }
+.stTabs [role="tab"] p { color:var(--ink2) !important; font-weight:600; font-size:.92rem; white-space:nowrap; }
 .stTabs [role="tab"][aria-selected="true"] { background:linear-gradient(120deg,#7c3aed,#2563eb 60%,#0891b2);
-                       box-shadow:0 0 22px -4px rgba(124,58,237,.8); border-color:transparent; }
+    box-shadow:0 0 22px -4px rgba(124,58,237,.8); }
 .stTabs [role="tab"][aria-selected="true"] p { color:#fff !important; }
 .stTabs .react-aria-SelectionIndicator { display:none !important; }
+@media (max-width: 1250px) { .stTabs [role="tab"] { padding:8px 8px !important; }
+  .stTabs [role="tab"] p { font-size:.84rem; } .stTabs div:has(> [role="tab"]) { gap:2px; padding:5px; } }
 
 /* section headings */
 .sec { font-size:1.22rem; font-weight:800; margin:16px 0 4px; }
