@@ -1,0 +1,7 @@
+snapshot_at,app_id,app_name,kind,score,ratings,reviews,installs,version,updated,star1,star2,star3,star4,star5
+2026-10-11T08:57:49+00:00,com.moveinsync.ets,MoveInSync (Employee),moveinsync,4.638115,114867,23619,3209106,12.19.0,"Oct 8, 2026",7324,840,1235,7272,98191
+2026-10-11T08:57:49+00:00,com.moveinsync.driver.lite,MoveInSync Partner - Lite (Driver),moveinsync,4.25,702,111,143072,Varies with device,,91,21,21,56,511
+2026-10-11T08:57:49+00:00,com.moveinsync.driver.dco,MoveInSync - Driver Partner,moveinsync,3.5,46,7,19847,Varies with device,,14,1,3,4,24
+2026-10-11T08:57:50+00:00,field.moveinsync.ets,MoveInSync - Field app,moveinsync,4.0833335,24,8,6764,1.0.92,"Sep 29, 2026",5,0,1,0,18
+2026-10-11T08:57:50+00:00,com.routematic.employee,Routematic (Employee),competitor,4.338448,34911,7165,1251758,7.0.6,"Sep 9, 2026",2688,807,2010,5892,23509
+2026-10-11T08:57:51+00:00,xdk.intel.cordova.template.eTMSBuddy,eTMS Buddy (Delta),competitor,1.6823338,6180,2631,562415,3.1.4,"Sep 4, 2026",4806,210,180,280,700
