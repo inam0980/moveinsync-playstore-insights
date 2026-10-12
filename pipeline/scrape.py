@@ -46,7 +46,9 @@ def snapshot(app_id: str, name: str, kind: str) -> dict:
 
 def run() -> pd.DataFrame:
     DATA_DIR.mkdir(exist_ok=True)
-    existing = pd.read_csv(REVIEWS_CSV) if REVIEWS_CSV.exists() else pd.DataFrame(columns=REVIEW_COLS)
+    # parse dates so stored rows sort alongside the Timestamps the scraper returns
+    existing = (pd.read_csv(REVIEWS_CSV, parse_dates=["at", "repliedAt"]) if REVIEWS_CSV.exists()
+                else pd.DataFrame(columns=REVIEW_COLS))
     known = set(existing["reviewId"].astype(str))
 
     rows = []
