@@ -1,4 +1,7 @@
 reviewId,app_id,app_name,content,score,thumbsUpCount,reviewCreatedVersion,at,replyContent,repliedAt,categories,primary_category,sentiment,severity,summary,classifier
+026c2e2a-7197-4609-85cf-94611b36a788,com.moveinsync.ets,MoveInSync (Employee),all good,5,0,12.19.0,2026-10-11 06:15:45,,,praise,praise,positive,low,,local-ml
+c76861bd-9969-4cdf-b6d6-3b2a506111f0,com.moveinsync.ets,MoveInSync (Employee),great overall experience,5,0,12.19.0,2026-10-11 00:38:29,,,praise,praise,positive,low,,local-ml
+2c2ba33a-0d2b-41ed-bc68-1d6ba0410a97,com.moveinsync.ets,MoveInSync (Employee),Excellent 👌,5,0,12.19.0,2026-10-10 21:09:42,,,praise,praise,positive,low,,local-ml
 3d87f169-2508-4a07-9e5a-d63b2c548ed3,com.moveinsync.ets,MoveInSync (Employee),"The new feature and very annoying feature which you have introduced - when you click view otp , it pops up the seat belt safely first. Why do you ask for user input one more click . very annoying I should be able to see the otp in one click.",2,0,12.19.0,2026-10-09 18:11:59,,,ui_ux|forced_prompts,ui_ux,negative,medium,Extra click for OTP due to safety pop-up is annoying.,gemini
 8ec4e20f-62d0-4cd8-a5f6-cd58da422616,com.moveinsync.ets,MoveInSync (Employee),Good,5,0,12.19.0,2026-10-09 16:55:33,,,praise,praise,positive,low,Good app.,gemini
 40363b38-fa55-4571-af0f-ff6fb0463015,com.moveinsync.ets,MoveInSync (Employee),worst app,1,0,12.19.0,2026-10-09 13:55:58,,,other,other,negative,low,Worst app.,gemini
@@ -28031,8 +28034,8 @@ Dalip",2019-03-24 09:14:42,booking_scheduling,booking_scheduling,neutral,medium,
 368050ab-f41d-4ad6-9c58-6ae66714de5d,com.moveinsync.ets,MoveInSync (Employee),awsome,5,0,5.4.4,2019-03-23 03:44:11,,,praise,praise,positive,low,,local-ml
 b3a7d5ac-5a9e-49a3-b51f-dc10655fb6ca,com.moveinsync.ets,MoveInSync (Employee),nice app!!,5,0,5.4.4,2019-03-23 03:26:05,,,praise,praise,positive,low,,local-ml
 4a949504-ad31-4fe5-bae0-fda8ac80f1ca,com.moveinsync.ets,MoveInSync (Employee),👍👍,5,0,,2019-03-23 02:27:43,,,praise,praise,positive,low,,local-ml
-987305ca-36c2-4740-a375-659ddf4afadc,com.moveinsync.ets,MoveInSync (Employee),OK OK transport,2,0,5.4.5,2019-03-23 01:13:06,,,other,other,negative,medium,,local-ml
 26b8cfb5-60bf-42bd-a35c-a8f201ba5d18,com.moveinsync.ets,MoveInSync (Employee),cab,3,0,5.4.4,2019-03-23 01:13:06,,,praise,praise,neutral,medium,,local-ml
+987305ca-36c2-4740-a375-659ddf4afadc,com.moveinsync.ets,MoveInSync (Employee),OK OK transport,2,0,5.4.5,2019-03-23 01:13:06,,,other,other,negative,medium,,local-ml
 49217348-571d-4eee-b311-1c113982e64a,com.moveinsync.ets,MoveInSync (Employee),super,5,0,5.4.5,2019-03-23 00:35:01,,,praise,praise,positive,low,,local-ml
 2d520f84-1104-4ff8-82e9-a5cd18deb2af,com.moveinsync.ets,MoveInSync (Employee),good,5,0,5.4.5,2019-03-23 00:20:38,,,praise,praise,positive,low,,local-ml
 3ca96647-d4b2-4982-a894-80046669e239,com.moveinsync.ets,MoveInSync (Employee),great,5,0,5.3.2.0,2019-03-22 23:54:31,,,praise,praise,positive,low,,local-ml
