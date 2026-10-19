@@ -1,4 +1,51 @@
 reviewId,app_id,app_name,content,score,thumbsUpCount,reviewCreatedVersion,at,replyContent,repliedAt,categories,primary_category,sentiment,severity,summary,classifier
+3fb40eb1-560d-46c6-837f-18d9e42b4072,com.moveinsync.ets,MoveInSync (Employee),okay 👍,5,0,,2026-10-17 23:56:07,,,praise,praise,positive,low,,local-ml
+a4234dec-2e23-47d9-a652-e27d20219f9a,com.moveinsync.ets,MoveInSync (Employee),it is very good app for corporate cab services,5,0,12.20.0,2026-10-17 12:48:19,,,praise,praise,positive,low,,local-ml
+2d34d17f-e87d-41b6-b035-d062b6843501,com.moveinsync.ets,MoveInSync (Employee),worst app,1,0,12.19.0,2026-10-16 21:26:28,,,other,other,negative,high,,local-ml
+6d759825-2dec-409b-b559-bf0eb8f02f7d,com.moveinsync.ets,MoveInSync (Employee),Genpact cabs can make u travel through the entire city With charging. Sequences are like wow.,1,0,12.20.0,2026-10-16 18:53:31,,,ui_ux,ui_ux,negative,high,,local-ml
+cb3a87e8-c9ae-49fd-b4c7-e8dcf122bcf3,com.moveinsync.ets,MoveInSync (Employee),Good,5,0,,2026-10-16 18:22:48,,,praise,praise,positive,low,,local-ml
+f06a555d-e9d9-4668-bf0e-a6410bb2647d,com.moveinsync.ets,MoveInSync (Employee),awesome app,5,0,12.18.1,2026-10-16 17:38:01,,,praise,praise,positive,low,,local-ml
+65b180a2-3bde-4789-8dc9-96ddae3b4a9a,com.moveinsync.ets,MoveInSync (Employee),supar,5,0,12.20.0,2026-10-16 17:33:08,,,praise,praise,positive,low,,local-ml
+8b3a362d-8152-44a0-bb77-fc99a8518e94,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.19.0,2026-10-16 16:14:30,,,praise,praise,positive,low,,local-ml
+f7ae1a95-7a1f-4e35-925f-7ff1a99f6922,com.moveinsync.ets,MoveInSync (Employee),"Worst app ever to commute, the location of cabs are not updated correctly most of the time, and gets updated at the very last moment, making it very hard to track. Also, the helpline/customer service related to it just totally disaster - I would personally have given them a negative rating if possible, never supportive, just long ongoing unsatisfactory calls and overall making a very bad travel experience.",1,0,12.19.0,2026-10-16 12:24:45,,,tracking_eta|support_grievance,tracking_eta,negative,high,,local-ml
+38aff3ae-5c04-446c-ad65-accc990cc92a,com.moveinsync.ets,MoveInSync (Employee),Good application but only one thing that notification alert it shows one or twice better but keep sending notification alerts for cab schedule disappointed with notification alerts its irritating literally,5,0,12.20.0,2026-10-16 07:58:53,,,notifications,notifications,positive,low,,local-ml
+7280515e-7d9d-4ab5-a965-c9506f9be1b6,com.moveinsync.ets,MoveInSync (Employee),outstanding service. keep it up.,5,0,12.20.0,2026-10-15 23:11:38,,,praise,praise,positive,low,,local-ml
+6c9840ce-ea25-4287-9de0-5fff9e4f59dd,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.20.0,2026-10-15 22:00:24,,,praise,praise,positive,low,,local-ml
+98e23f68-0bc5-4f66-a488-bfbade071ffa,com.moveinsync.ets,MoveInSync (Employee),app needs to allow option to change office sites,3,0,12.20.0,2026-10-15 19:37:46,,,ui_ux,ui_ux,neutral,medium,,local-ml
+7a38f29a-9c71-42bd-b607-332450fd253c,com.moveinsync.ets,MoveInSync (Employee),WORST WORST WORST SERVICE,1,0,12.20.0,2026-10-15 11:47:01,,,other|support_grievance,other,negative,high,,local-ml
+bd0c14fd-a474-4017-a2c0-6e94fb182232,com.moveinsync.ets,MoveInSync (Employee),Good service,5,0,12.20.0,2026-10-15 07:11:15,,,praise,praise,positive,low,,local-ml
+7c2e8168-8faa-4d75-aba6-b41a962896fc,com.moveinsync.ets,MoveInSync (Employee),worst drivers,1,0,,2026-10-14 23:52:48,,,driver_vehicle,driver_vehicle,negative,high,,local-ml
+2bf2b880-ed04-4e34-ac2d-ef7943336140,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.19.0,2026-10-14 23:38:10,,,praise,praise,positive,low,,local-ml
+96da1c30-55db-4a2e-9cf4-3eef9606f693,com.moveinsync.ets,MoveInSync (Employee),too many a times asks for confirmation after once form filled then too 😂,3,0,12.20.0,2026-10-14 23:37:09,,,app_crash_performance,app_crash_performance,neutral,medium,,local-ml
+7c658e0b-4540-4ae2-9f61-4f94a4339f00,com.moveinsync.ets,MoveInSync (Employee),amazing 😍😍😍,5,0,12.19.0,2026-10-14 22:23:36,,,praise,praise,positive,low,,local-ml
+ad8cef26-8c88-4ed7-a13b-951056c044b4,com.moveinsync.ets,MoveInSync (Employee),Excellent 👍🏻,5,0,12.20.0,2026-10-14 15:17:25,,,praise,praise,positive,low,,local-ml
+cdf497ea-c577-4c05-9bef-580a61172579,com.moveinsync.ets,MoveInSync (Employee),Very good app,5,0,,2026-10-14 10:31:08,,,praise,praise,positive,low,,local-ml
+4d039900-1773-450d-973c-725b26443ae1,com.moveinsync.ets,MoveInSync (Employee),"with the latest version, the destination is not being populated. Getting an error like no eligible stop found. it was working fine with the earlier version.",4,0,12.20.0,2026-10-14 10:00:25,,,app_crash_performance,app_crash_performance,positive,low,,local-ml
+97afb3bf-a556-45db-94cc-15bee02afa1a,com.moveinsync.ets,MoveInSync (Employee),overall nice experience and recent update is awesome,5,0,12.20.0,2026-10-14 09:37:26,,,praise,praise,positive,low,,local-ml
+f6bb3692-c171-4d0b-accd-f25977fb555a,com.moveinsync.ets,MoveInSync (Employee),third class customer care and service.,1,0,12.17.0,2026-10-14 05:47:28,,,support_grievance,support_grievance,negative,high,,local-ml
+3f57dd3d-2141-47bc-8264-d232785d5aa5,com.moveinsync.ets,MoveInSync (Employee),good one. easy to use,5,0,12.20.0,2026-10-14 04:50:15,,,praise,praise,positive,low,,local-ml
+6550a4af-2797-4c68-8c5d-7b0ecfc845b5,com.moveinsync.ets,MoveInSync (Employee),Good,5,0,12.20.0,2026-10-14 00:02:11,,,praise,praise,positive,low,,local-ml
+c78932f7-e0f1-4c54-b313-04a83d220d62,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.20.0,2026-10-13 23:48:21,,,praise,praise,positive,low,,local-ml
+6f501d9b-e6f0-4214-ab3f-f482f37236d5,com.moveinsync.ets,MoveInSync (Employee),nice 👍🙂,5,0,12.19.0,2026-10-13 22:53:05,,,praise,praise,positive,low,,local-ml
+c3589858-79c1-458c-ad77-a9aae846c3eb,com.moveinsync.ets,MoveInSync (Employee),Nice app,5,0,12.12.3,2026-10-13 22:49:14,,,praise,praise,positive,low,,local-ml
+de9c3c2e-8390-4881-a3ef-156707ba591e,com.moveinsync.ets,MoveInSync (Employee),some drivers are unprofessional,4,0,,2026-10-13 22:45:31,,,driver_vehicle|praise,driver_vehicle,positive,low,,local-ml
+2d3b7fc8-2ed2-436c-b6f1-4f926aca00f3,com.moveinsync.ets,MoveInSync (Employee),Smooth and convenient ride...well managed,5,0,12.20.0,2026-10-13 22:36:57,,,praise,praise,positive,low,,local-ml
+c1f187aa-f5f0-4fa3-8546-eec06fa3ba2b,com.moveinsync.ets,MoveInSync (Employee),nyc app,5,0,12.20.0,2026-10-13 21:58:44,,,praise,praise,positive,low,,local-ml
+05ff585a-9bcd-4818-a452-461f672bba54,com.moveinsync.ets,MoveInSync (Employee),fantastic,5,0,12.19.0,2026-10-13 18:51:45,,,praise,praise,positive,low,,local-ml
+7560bc08-edd0-45c4-ba51-4350a522339f,com.moveinsync.ets,MoveInSync (Employee),user friendly,5,0,12.19.0,2026-10-13 17:52:40,,,praise|ui_ux,praise,positive,low,,local-ml
+c80dca62-8303-497b-a6c7-c175de3cf430,com.moveinsync.ets,MoveInSync (Employee),women safety,5,0,12.19.0,2026-10-13 13:51:07,,,praise|safety,praise,positive,low,,local-ml
+cb1d4bf5-b91f-49db-b200-0393b441c672,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.20.0,2026-10-13 13:13:52,,,praise,praise,positive,low,,local-ml
+f417db62-4b35-45e3-9b7a-030cc4fbaedc,com.moveinsync.ets,MoveInSync (Employee),great,5,0,12.19.0,2026-10-13 10:50:42,,,praise,praise,positive,low,,local-ml
+d6d55ca7-00c4-485c-90e1-18d3cd0c248c,com.moveinsync.ets,MoveInSync (Employee),not getting OTP or Mail OTP every useless App your developer or useless hire better person who knows how to build proper app,1,0,12.20.0,2026-10-13 05:45:29,,,login_access,login_access,negative,high,,local-ml
+88e588e3-3047-41d5-a478-81d6d3a5b8ce,com.moveinsync.ets,MoveInSync (Employee),does not work properly,1,0,12.20.0,2026-10-13 03:32:08,,,other,other,negative,high,,local-ml
+4666dea6-955b-4a91-a64c-d9506a432d74,com.moveinsync.ets,MoveInSync (Employee),most convenient and the easiest user friendly app for any company commute it's employees,5,0,12.19.0,2026-10-12 21:20:22,,,praise,praise,positive,low,,local-ml
+7f593b3d-0641-4259-9c30-4b5208aff5c0,com.moveinsync.ets,MoveInSync (Employee),Awesome,5,0,12.19.0,2026-10-12 18:21:05,,,praise,praise,positive,low,,local-ml
+a1062e2d-fd3d-4fda-b3be-b8e52ef6f5fe,com.moveinsync.ets,MoveInSync (Employee),"it says some bug in app, not able to open it",1,0,12.20.0,2026-10-12 17:06:59,,,app_crash_performance,app_crash_performance,negative,high,,local-ml
+ad77ca66-bc24-4364-9dd9-e959cdc7f7a1,com.moveinsync.ets,MoveInSync (Employee),"Great smooth experience. no clutter, straight to the point.",5,0,12.19.0,2026-10-12 15:29:39,,,praise,praise,positive,low,,local-ml
+64b51d1b-0bbd-489d-b43d-ce1d8cdf89db,com.moveinsync.ets,MoveInSync (Employee),rubbish app. keeps crashing everyday.,1,0,12.20.0,2026-10-12 14:43:11,,,app_crash_performance,app_crash_performance,negative,high,,local-ml
+46e7fd2e-b665-429c-b9be-e84fd818dbb1,com.moveinsync.ets,MoveInSync (Employee),"nice, user friendly app. easy to use and track cab details.",4,0,12.19.0,2026-10-12 12:23:40,,,praise|notifications|tracking_eta,praise,positive,low,,local-ml
+d9aa7fa2-f837-4c9e-8857-928239690ca2,com.moveinsync.ets,MoveInSync (Employee),good,5,0,12.19.0,2026-10-12 05:34:59,,,praise,praise,positive,low,,local-ml
+031af73d-37ed-47b8-8c9c-e8d3f01ae971,com.moveinsync.ets,MoveInSync (Employee),great service,5,0,12.19.0,2026-10-12 01:06:33,,,praise,praise,positive,low,,local-ml
 026c2e2a-7197-4609-85cf-94611b36a788,com.moveinsync.ets,MoveInSync (Employee),all good,5,0,12.19.0,2026-10-11 06:15:45,,,praise,praise,positive,low,,local-ml
 c76861bd-9969-4cdf-b6d6-3b2a506111f0,com.moveinsync.ets,MoveInSync (Employee),great overall experience,5,0,12.19.0,2026-10-11 00:38:29,,,praise,praise,positive,low,,local-ml
 2c2ba33a-0d2b-41ed-bc68-1d6ba0410a97,com.moveinsync.ets,MoveInSync (Employee),Excellent 👌,5,0,12.19.0,2026-10-10 21:09:42,,,praise,praise,positive,low,,local-ml
