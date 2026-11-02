@@ -23,3 +23,9 @@ snapshot_at,app_id,app_name,kind,score,ratings,reviews,installs,version,updated,
 2026-10-26T07:57:01+00:00,field.moveinsync.ets,MoveInSync - Field app,moveinsync,4.0833335,24,8,6992,1.0.93,"Oct 13, 2026",5,0,1,0,18
 2026-10-26T07:57:01+00:00,com.routematic.employee,Routematic (Employee),competitor,4.340462,35058,7184,1262881,7.0.6,"Sep 9, 2026",2674,819,2055,5845,23658
 2026-10-26T07:57:01+00:00,xdk.intel.cordova.template.eTMSBuddy,eTMS Buddy (Delta),competitor,1.6892109,6184,2632,565868,3.1.4,"Sep 4, 2026",4798,208,179,288,706
+2026-11-02T09:41:36+00:00,com.moveinsync.ets,MoveInSync (Employee),moveinsync,4.640437,115725,23753,3256974,12.20.0,"Oct 22, 2026",7404,881,1202,6938,99295
+2026-11-02T09:41:37+00:00,com.moveinsync.driver.lite,MoveInSync Partner - Lite (Driver),moveinsync,4.245098,712,112,147169,Varies with device,,90,20,27,55,515
+2026-11-02T09:41:37+00:00,com.moveinsync.driver.dco,MoveInSync - Driver Partner,moveinsync,3.724138,58,8,23223,Varies with device,,15,1,3,5,34
+2026-11-02T09:41:37+00:00,field.moveinsync.ets,MoveInSync - Field app,moveinsync,4.0833335,24,8,7035,1.0.93,"Oct 13, 2026",5,0,1,0,18
+2026-11-02T09:41:37+00:00,com.routematic.employee,Routematic (Employee),competitor,4.331315,35140,7191,1264714,7.0.6,"Sep 9, 2026",2724,820,2087,5957,23548
+2026-11-02T09:41:37+00:00,xdk.intel.cordova.template.eTMSBuddy,eTMS Buddy (Delta),competitor,1.6990291,6188,2632,566491,3.1.4,"Sep 4, 2026",4785,210,180,290,720
